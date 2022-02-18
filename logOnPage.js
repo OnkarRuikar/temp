@@ -137,9 +137,12 @@ JSON.stringifyWithCircularRefs = (function () {
   obj.myLog('&#9888;', ...args);
   warn(...args);
  };
- console.error = (...args) => {
+ console.error0 = (...args) => {
   let obj = { color: 'darkred', myLog: myLog };
   obj.myLog('&#10060;', ...args);
+ };
+ console.error = (...args) => {
+  console.error0(...args);
   error(...args);
  };
  console.debug = (...args) => {
@@ -163,7 +166,7 @@ JSON.stringifyWithCircularRefs = (function () {
  };
 
  window.onunhandledrejection = function (event) {
-  console.error(
+  console.error0(
    `Unhandled Promise Rejection. Reason: 
           ${JSON.stringifyWithCircularRefs(event.reason)}`,
    ` Returne value: ${event.returnValue}`

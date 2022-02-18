@@ -5,7 +5,70 @@
  Author: Onkar Ruikar
 */
 
-(function () {
+ //circular stringify
+    JSON.stringifyWithCircularRefs = (function () {
+      const refs = new Map();
+      const parents = [];
+      const path = ["this"];
+
+      function clear() {
+        refs.clear();
+        parents.length = 0;
+        path.length = 1;
+      }
+
+      function updateParents(key, value) {
+        let idx = parents.length - 1;
+        let prev = parents[idx];
+        if (prev[key] === value || idx === 0) {
+          path.push(key);
+          parents.push(value);
+        } else {
+          while (idx-- >= 0) {
+            prev = parents[idx];
+            if (prev && prev[key] === value) {
+              idx += 2;
+              parents.length = idx;
+              path.length = idx;
+              --idx;
+              parents[idx] = value;
+              path[idx] = key;
+              break;
+            }
+          }
+        }
+      }
+
+      function checkCircular(key, value) {
+        if (value != null) {
+          if (typeof value === "object") {
+            if (key) { updateParents(key, value); }
+
+            let other = refs.get(value);
+            if (other) {
+              return '[Circular Reference]' + other;
+            } else {
+              refs.set(value, path.join('.'));
+            }
+          }
+        }
+        return value;
+      }
+
+      return function stringifyWithCircularRefs(obj, space) {
+        try {
+          parents.push(obj);
+          return JSON.stringify(obj, checkCircular, space);
+        } finally {
+          clear();
+        }
+      }
+    })();
+
+    // patch logs
+    (function () {
+      'use strict';
+
       let log = console.log;
       let warn = console.warn;
       let error = console.error;
@@ -27,13 +90,13 @@
         document.body.insertAdjacentHTML('beforeend', logDiv);
         logger = document.getElementById('pageLog');
       }
-  
+
       let count = 0;
       function myLog() {
         let text = `<span style='color:${this.color}'>${count++}: `;
         for (var i = 0; i < arguments.length; i++) {
           if (typeof arguments[i] == 'object') {
-            text += (JSON && JSON.stringify ? JSON.stringify(...arguments[i], undefined, 2) : arguments[i]) + '<br />';
+            text += (JSON && JSON.stringify ? JSON.stringifyWithCircularRefs(arguments[i], undefined, 2) : arguments[i]) + '<br />';
           } else {
             text += arguments[i] + '<br />';
           }
@@ -44,22 +107,22 @@
 
       console.log = (...args) => {
         let obj = { color: 'black', myLog: myLog };
-        obj.myLog(args);
+        obj.myLog(...args);
         log(...args);
       }
       console.warn = (...args) => {
         let obj = { color: 'brown', myLog: myLog };
-        obj.myLog(args);
+        obj.myLog(...args);
         warn(...args);
       }
       console.error = (...args) => {
         let obj = { color: 'red', myLog: myLog };
-        obj.myLog(args);
+        obj.myLog(...args);
         error(...args);
       }
       console.debug = (...args) => {
         let obj = { color: '#555', myLog: myLog };
-        obj.myLog(args);
+        obj.myLog(...args);
         debug(...args);
       }
 

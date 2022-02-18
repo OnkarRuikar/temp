@@ -1,3 +1,4 @@
+'use strict';
 /**
  Utility to show console logs on document at the end of the <body> tag.
  Can be used to debug html pages on tablets and smart phones.
@@ -67,8 +68,6 @@
 
     // patch logs
     (function () {
-      'use strict';
-
       let log = console.log;
       let warn = console.warn;
       let error = console.error;
@@ -126,5 +125,25 @@
         debug(...args);
       }
 
+      //handle global errors
+      window.onerror = function (msg, url, lineNo, columnNo, error) {
+				var string = msg.toLowerCase();
+				var message = [
+					'Message: ' + msg,
+					'URL: ' + url,
+					'Line: ' + lineNo,
+					'Column: ' + columnNo,
+					'Error object: ' + JSON.stringifyWithCircularRefs(error)
+				].join(' - ');
+				console.error0(message);
+				return false;
+			};
+
+			window.onunhandledrejection = function (event) {
+				console.error(`Unhandled Promise Rejection. Reason: 
+          ${JSON.stringifyWithCircularRefs(event.reason)}`,
+					` Returne value: ${event.returnValue}`);
+			};
+      
       console.log('logging on page');
     })();

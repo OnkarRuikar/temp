@@ -36,6 +36,14 @@
     {
       "filename": "**/en-us/learn/html/**/*.md",
       "words": ["Howto"]
+    },
+    {
+      "filename": "**/en-us/mozilla/add-ons/webextensions/api/find/find/index.md",
+      "words": ["résumé"]
+    },
+    {
+      "filename": "**/en-us/mozilla/firefox/releases/111/index.md",
+      "words": ["résumé"]
     }
   ]
 }

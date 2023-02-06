@@ -1,0 +1,41 @@
+{
+  "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
+  "version": "0.2",
+  "language": "en",
+  "languageId": "*",
+   "dictionaryDefinitions": [
+    {
+      "name": "project-words",
+      "path": "./project-words.txt",
+      "addWords": true
+    }
+  ],
+  "dictionaries": [
+    "project-words",
+    "bash",
+    "css",
+    "cpp",
+    "django",
+    "filetypes",
+    "fonts",
+    "fullstack",
+    "html",
+    "latex",
+    "lorem-ipsum",
+    "markdown",
+    "node",
+    "npm",
+    "python",
+    "softwareTerms",
+    "svelte",
+    "typescript"
+  ],
+  "ignorePaths": [".vscode/cspell.json", "**/node_modules/**"],
+  "allowCompoundWords": true,
+  "overrides": [
+    {
+      "filename": "**/en-us/learn/html/**/*.md",
+      "words": ["Howto"]
+    }
+  ]
+}

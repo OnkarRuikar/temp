@@ -1,0 +1,46 @@
+name: Check content spellings
+
+on:
+  schedule:
+    - cron: "0 0 * * mon"
+  workflow_dispatch:
+
+jobs:
+  sync:
+    if: github.repository == 'OnkarRuikar/temp'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+
+      - uses: actions/checkout@v3
+        with:
+          repository: mdn/content
+          ref: main
+          path: content
+
+      - name: Run scripts
+        run: |
+          npm install
+          echo Running check
+          output=$(npx cspell --no-progress --config ./cspell.json "content/**/*.md" || exit 0)
+          echo "$output"
+          echo "OUTPUT<<EOF" >> $GITHUB_ENV
+          echo "$output" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Create an issue
+        if: env.OUTPUT != ''
+        uses: dacbd/create-issue-action@main
+        with:
+          token: ${{ github.token }}
+          title: Weekly spelling check
+          body: ${{ env.OUTPUT }}
+        env:
+          OUTPUT: ${{ env.OUTPUT }}
+

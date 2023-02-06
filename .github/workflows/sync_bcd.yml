@@ -1,0 +1,93 @@
+name: Create syncrhornize with BCD PR
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+env:
+  ABORT: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check if PR already exists
+        run: |
+          latest=$(curl -sL https://api.github.com/repos/mdn/browser-compat-data/releases/latest | grep -oP '(?<=tag_name....)[^"]+')
+          prs=$(curl -sL "https://api.github.com/search/issues?q=is:pr+repo:mdn/content+author:onkarruikar+in:title+Synchronize+with+BCD+$latest")
+          pr_count=$(echo "$prs" | grep -oP '(?<=^  .total_count...)\d+')
+          echo "Latest version $latest, PRs $pr_count"
+          if [[ $pr_count != "0" ]]
+          then
+            echo -e "PR(s) already exist:\n $(echo $prs | grep -oP '(?<=title....)[^\"]+')"
+            echo "ABORT=true" >> $GITHUB_ENV
+          else
+            prs=$(curl -sL "https://api.github.com/search/issues?q=is:pr+is:open+repo:mdn/content+author:onkarruikar+in:title+Synchronize+with+BCD")
+            pr_count=$(echo "$prs" | grep -oP '(?<=^  .total_count...)\d+')
+            if [[ $pr_count != "0" ]]
+            then
+              echo -e "Previous PR not merged:\n $(echo $prs | grep -oP '(?<=title....)[^\"]+')"
+              echo "ABORT=true" >> $GITHUB_ENV
+            fi
+          fi
+          echo "VERSION=$latest" >> $GITHUB_ENV
+
+      - name: Setup Node.js environment
+        if: ${{ env.ABORT == 'false' }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+
+      - uses: actions/checkout@v3
+        if: ${{ env.ABORT == 'false' }}
+        with:
+          repository: OnkarRuikar/content
+          ref: main
+          path: content
+          token: ${{ secrets.R_PAT }}
+
+      - name: Install SSH
+        if: ${{ env.ABORT == 'false' }}
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SKEY }}
+          name: id_ed25519
+          known_hosts: ${{ secrets.KH }}
+
+      - name: Run synchronization script and create PR
+        if: ${{ env.ABORT == 'false' }}
+        run: |
+          wget -q "https://github.com/mdn/browser-compat-data/releases/download/${VERSION}/data.json"
+          cd content
+          git remote add mdn git@github.com:mdn/content.git
+          git config --local user.name "OnkarRuikar"
+          git config --local user.email '87750369+OnkarRuikar@users.noreply.github.com'
+          git config --global user.name "OnkarRuikar"
+          git config --global user.email '87750369+OnkarRuikar@users.noreply.github.com'
+          git pull mdn main
+          git push
+          cd ..
+          wget -q -O sync_bcd.mjs https://gist.githubusercontent.com/OnkarRuikar/0b332d3dcc31ea380e128005b5c1f65d/raw/sync_bcd.mjs
+          echo "Processing BCD $VERSION data"
+          node sync_bcd.mjs data.json ./content
+          cd content
+          if test -z "$(git status -s)"
+          then
+            echo "Nothing to commit! o/"
+          else
+            $(git branch -D sync_bcd || exit 0)
+            $(git push origin --delete sync_bcd || exit 0)
+            git checkout -b sync_bcd main
+            echo "Commiting changes"
+            git -c author.name=OnkarRuikar -c author.email=OnkarRuikar@users.noreply.github.com -c committer.name=OnkarRuikar -c committer.email=OnkarRuikar@users.noreply.github.com commit -am "Synchronize with BCD $VERSION"
+            echo "Pushing to origin"
+            git push -u origin sync_bcd
+            echo "creating PR"
+            pr_body="[BCD release $VERSION](https://github.com/mdn/browser-compat-data/releases/tag/$VERSION)"$'\n\n'"/cc @queengooborg @sideshowbarker"
+            gh pr create --title "Synchronize with BCD $VERSION" --body "$pr_body" --repo "mdn/content"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.R_PAT }}
+          VERSION: ${{ env.VERSION }}

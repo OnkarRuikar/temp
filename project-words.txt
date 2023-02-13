@@ -1,4 +1,5 @@
 onsinkchange
+ongesturestart
 AAAAAAABAAE
 AAAAD
 AAABAAEAEBAAA

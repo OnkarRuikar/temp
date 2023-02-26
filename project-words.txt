@@ -1,3 +1,7 @@
+Equationi
+Separatei
+Funci
+disablei
 asynchrony
 onsinkchange
 ongesturestart

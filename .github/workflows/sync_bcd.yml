@@ -80,8 +80,9 @@ jobs:
           then
             echo "Nothing to commit! o/"
           else
-            $(git branch -D sync_bcd || exit 0)
-            $(git push origin --delete sync_bcd || exit 0)
+            echo $(git branch -D sync_bcd)
+            echo $(git push origin --delete sync_bcd) &
+            sleep 5s
             git checkout -b sync_bcd main
             echo "Commiting changes"
             git -c author.name=OnkarRuikar -c author.email=OnkarRuikar@users.noreply.github.com -c committer.name=OnkarRuikar -c committer.email=OnkarRuikar@users.noreply.github.com commit -am "Synchronize with BCD $VERSION"

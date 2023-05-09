@@ -13,6 +13,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: set configs
+        run: |
+          git config --global core.autocrlf input
+
       - name: Check if PR already exists
         run: |
           latest=$(curl -sL https://api.github.com/repos/mdn/browser-compat-data/releases/latest | grep -oP '(?<=tag_name....)[^"]+')

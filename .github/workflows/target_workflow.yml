@@ -1,8 +1,7 @@
 name: Gets called
 
 on:
-  repository_dispatch:
-     types: [bcd_release]
+  repository_dispatch
 
 jobs:
   dostuff:

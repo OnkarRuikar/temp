@@ -1,0 +1,16 @@
+name: Gets called
+
+on:
+  repository_dispatch:
+     types: [bcd_release]
+
+jobs:
+  dostuff:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "do stuff"
+        env:
+          VERSION: ${{ github.event.client_payload.version }}
+        run: |
+          echo BCD version $VERSION got released!
+          

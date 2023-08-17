@@ -1,7 +1,8 @@
 name: Gets called
 
 on:
-  repository_dispatch
+  repository_dispatch:
+    event: [bcd_release]
 
 jobs:
   dostuff:
@@ -11,5 +12,5 @@ jobs:
         env:
           VERSION: ${{ github.event.client_payload.version }}
         run: |
-          echo BCD version $VERSION got released!
+          echo BCD version $VERSION released!
           

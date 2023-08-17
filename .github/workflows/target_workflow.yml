@@ -2,7 +2,7 @@ name: Gets called
 
 on:
   repository_dispatch:
-    event: [bcd_release]
+    types: [bcd_release]
 
 jobs:
   dostuff:

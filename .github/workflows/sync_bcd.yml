@@ -76,7 +76,7 @@ jobs:
           npm init -y
           npm install front-matter --save-dev
           npm install json-to-pretty-yaml --save-dev
-          wget -q -O sync_bcd.mjs https://gist.githubusercontent.com/OnkarRuikar/0b332d3dcc31ea380e128005b5c1f65d/raw/d4854eadc07abd292b1bba652ece11fb95afdaac/sync_bcd.mjs
+          wget -q -O sync_bcd.mjs https://gist.githubusercontent.com/OnkarRuikar/0b332d3dcc31ea380e128005b5c1f65d/raw/0b75aae8966c7766609041f47cbe685a3789aff0/sync_bcd.mjs
           echo "Processing BCD $VERSION data"
           node sync_bcd.mjs data.json ./content
           cd content

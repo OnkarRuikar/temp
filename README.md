@@ -1,2 +1,2 @@
 # temp
-Temporary demo, example files. 
+Demos, examples, and workflows. 

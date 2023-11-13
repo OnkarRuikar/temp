@@ -27,6 +27,7 @@ jobs:
       - name: Run scripts
         run: |
           npm install
+          rm content/.vscode/cspell.json
           echo Running check
           output=$(npx cspell --no-progress --config ./cspell.json "content/**/*.md" || exit 0)
           echo "$output"

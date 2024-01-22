@@ -1,3 +1,4 @@
+oncharacterboundsupdate
 será
 traducido
 puede

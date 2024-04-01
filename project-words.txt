@@ -1,3 +1,5 @@
+Dedalium
+Loycom
 Okhsv
 Okhsl
 Zstandard

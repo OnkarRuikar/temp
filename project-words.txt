@@ -1,3 +1,7 @@
+JLREQ
+CLREQ
+chws
+Kaku
 kibibytes
 CDLR
 Minh

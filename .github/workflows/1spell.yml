@@ -41,7 +41,12 @@ jobs:
         with:
           token: ${{ github.token }}
           title: Weekly spelling check
-          body: ${{ env.OUTPUT }}
+          body: |
+              Found typos and unknown words:
+              ${{ env.OUTPUT }}
+
+              > [!TIP]
+              > Add the valid words to https://github.com/mdn/content/blob/main/.vscode/project-words.txt file.
         env:
           OUTPUT: ${{ env.OUTPUT }}
 

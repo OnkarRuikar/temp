@@ -93,7 +93,7 @@ jobs:
             echo "Pushing to origin"
             git push -u origin sync_bcd
             echo "creating PR"
-            pr_body="[BCD release $VERSION](https://github.com/mdn/browser-compat-data/releases/tag/$VERSION)"$'\n\n'"/cc @queengooborg @sideshowbarker"
+            pr_body="[BCD release $VERSION](https://github.com/mdn/browser-compat-data/releases/tag/$VERSION)"
             gh pr create --title "Synchronize with BCD $VERSION" --body "$pr_body" --repo "mdn/content" --label "automated pr"
           fi
         env:

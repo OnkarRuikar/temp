@@ -1,8 +1,8 @@
-name: Create syncrhornize with BCD PR
+name: Create synchronize with BCD PR
 
 on:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "0 22 * * *"
   workflow_dispatch:
 
 env:
